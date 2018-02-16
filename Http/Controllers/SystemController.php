@@ -31,7 +31,16 @@ class SystemController extends Controller
      */
     public function index()
     {
-        return view('system::index');
+        $sysInfo = (object)[
+            'disk' => (object)[
+                'total' => formatBytes(disk_total_space('/')),
+                'free' => formatBytes(disk_total_space('/') - disk_free_space('/'))
+            ],
+            'ram' => round(serverMemoryUsage(), 2),
+            'cpu' => systemLoad(systemCoreCount())
+        ];
+
+        return view('system::index', compact('sysInfo'));
     }
 
 

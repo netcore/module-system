@@ -6,7 +6,8 @@
     "active": 1,
     "order": 1,
     "providers": [
-        "Modules\\System\\Providers\\SystemServiceProvider"
+        "Modules\\System\\Providers\\SystemServiceProvider",
+        "Modules\\System\\Providers\\HelperServiceProvider"
     ],
     "aliases": {},
     "files": [
