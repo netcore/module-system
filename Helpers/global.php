@@ -82,3 +82,14 @@ if (!function_exists('serverMemoryUsage')) {
         return $memory_usage;
     }
 }
+
+if (!function_exists('core')) {
+
+    /**
+     * @return \Illuminate\Foundation\Application|mixed|\Modules\System\Repositories\SystemRepository|SystemRepository
+     */
+    function core()
+    {
+        return app('SystemRepository');
+    }
+}

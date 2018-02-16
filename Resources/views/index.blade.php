@@ -23,8 +23,10 @@
                             <div class="box bg-danger">
                                 <div class="box-cell p-a-3 valign-middle">
                                     <i class="box-bg-icon middle right fa fa-hdd-o"></i>
-                                    <span class="font-size-24"><strong>{{ $sysInfo->disk->free }}
-                                            /{{ $sysInfo->disk->total }}</strong></span><br>
+                                    <span class="font-size-24">
+                                        <strong>{{ $sysInfo->disk->free }}/{{ $sysInfo->disk->total }}</strong>
+                                    </span>
+                                    <br>
                                     <span class="font-size-15">Disk Usage</span>
                                 </div>
                             </div>
@@ -53,15 +55,28 @@
                 </div>
                 <div class="panel-body">
                     <div class="table-primary">
-                        <table class="table table-bordered datatable">
+                        <table id="datatable" class="table table-bordered">
                             <thead>
                             <tr>
+                                <th>ID</th>
+                                @if(config('netcore.module-system.columns.type'))
+                                    <th>Type</th>
+                                @endif
                                 <th>User</th>
+                                <th>Message</th>
                                 <th>Method</th>
-                                <th>IP</th>
-                                <th>Browser</th>
-                                <th>Platform</th>
-                                <th style="min-width:200px">Actions</th>
+                                <th>URL</th>
+                                @if(config('netcore.module-system.columns.ip'))
+                                    <th>IP</th>
+                                @endif
+                                @if(config('netcore.module-system.columns.browser'))
+                                    <th>Browser</th>
+                                @endif
+                                @if(config('netcore.module-system.columns.platform'))
+                                    <th>Platform</th>
+                                @endif
+                                <th>Created At</th>
+                                <th>Actions</th>
                             </tr>
                             </thead>
                         </table>
@@ -86,6 +101,23 @@
             </div>
         </div>
     @endif
+
+    <div id="view-data" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Data</h4>
+                </div>
+                <div class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('scripts')
@@ -93,23 +125,40 @@
         $('#datatable').DataTable({
             processing: true,
             serverSide: true,
-            ajax: '{!! route('admin::portfolio.pagination') !!}',
+            ajax: '{!! route('admin::system.pagination') !!}',
             responsive: true,
-            order: [[5, "desc"]], // created_at
+            order: [[0, "desc"]], // created_at
             columns: [
-
-                /**
-                 * data is used to display data that come from server,
-                 * but 'name' is sent to server when we need to do sorting/searching
-                 */
-                {data: 'title', name: 'title'},
-                {data: 'slug', name: 'slug'},
-                {data: 'content', name: 'content', orderable: false},
-                {data: 'has_feedback', name: 'has_feedback', orderable: false, searchable: false},
-                {data: 'is_visible', name: 'is_visible'},
-                {data: 'in_homepage', name: 'in_homepage'},
-                {data: 'type', name: 'type'},
-                {data: 'created_at', name: 'created_at'},
+                {data: 'id', name: 'id'},
+                    @if(config('netcore.module-system.columns.type'))
+                {
+                    data: 'type', name: 'type'
+                },
+                    @endif
+                {
+                    data: 'user_id', name: 'user_id', orderable: false, searchable: false
+                },
+                {data: 'message', name: 'message'},
+                {data: 'method', name: 'method'},
+                {data: 'url', name: 'url'},
+                    @if(config('netcore.module-system.columns.type'))
+                {
+                    data: 'ip', name: 'ip'
+                },
+                    @endif
+                    @if(config('netcore.module-system.columns.browser'))
+                {
+                    data: 'browser', name: 'browser'
+                },
+                    @endif
+                    @if(config('netcore.module-system.columns.platform'))
+                {
+                    data: 'platform', name: 'platform'
+                },
+                    @endif
+                {
+                    data: 'created_at', name: 'created_at'
+                },
                 {data: 'action', name: 'action', orderable: false, searchable: false}
             ]
         });
@@ -117,5 +166,26 @@
         $('#datatable_wrapper .table-caption').text('');
         $('#datatable_wrapper .dataTables_filter input').attr('placeholder', 'Search...');
 
+        jQuery(document).on('click', '.view-data', function (e) {
+            e.preventDefault();
+
+            var self = jQuery(this);
+
+            var id = self.data('id');
+            var text = self.html();
+
+            self.html('<i class="fa fa-refresh fa-spin"></i>');
+            self.attr('disabled', true);
+
+            jQuery.get('{{ url('admin/system/view-data') }}/' + id, function (view) {
+                var modal = jQuery('#view-data');
+
+                modal.find('.modal-body').html(view);
+                modal.modal('show');
+
+                self.html(text);
+                self.attr('disabled', false);
+            })
+        });
     </script>
 @endsection

@@ -4,6 +4,8 @@ namespace Modules\System\Http\Controllers;
 
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
+use Modules\System\Models\SystemLog;
+use Yajra\DataTables\Facades\DataTables;
 
 /**
  * Class SystemController
@@ -31,18 +33,88 @@ class SystemController extends Controller
      */
     public function index()
     {
-        $sysInfo = (object)[
-            'disk' => (object)[
-                'total' => formatBytes(disk_total_space('/')),
-                'free' => formatBytes(disk_total_space('/') - disk_free_space('/'))
-            ],
-            'ram' => round(serverMemoryUsage(), 2),
-            'cpu' => systemLoad(systemCoreCount())
-        ];
+        $sysInfo = core()->systemInfo();
 
         return view('system::index', compact('sysInfo'));
     }
 
+    /**
+     * @param SystemLog $system
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
+     */
+    public function destroy(SystemLog $system)
+    {
+        $system->delete();
+
+        return response()->json(['status' => 'success']);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function pagination()
+    {
+        $columns = [
+            'id',
+            'user_id',
+            'type',
+            'message',
+            'url',
+            'method',
+            'ip',
+            'browser',
+            'platform',
+            'data',
+            'created_at',
+        ];
+
+        foreach ($this->config['columns'] as $column) {
+            if (isset($columns[$column])) {
+                if (!$columns[$column]) {
+                    unset($columns[$column]);
+                }
+            }
+        }
+
+        $query = SystemLog::select($columns)->with('user')->orderBy('id', 'desc');
+
+        $datatable = DataTables::of($query)
+            ->editColumn('user_id', function ($entry) {
+                if ($entry->user) {
+                    return $entry->user->first_name . ' ' . $entry->user->last_name;
+                } else {
+                    return '-';
+                }
+            });
+
+        if ($this->config['columns']['type']) {
+            $datatable->editColumn('type', function ($entry) {
+                return view('system::_tds.type', compact('entry'))->render();
+            });
+        }
+
+        $datatable->addColumn('action', function ($entry) {
+            return view('system::_tds.actions', compact('entry'))->render();
+        });
+
+        return $datatable->rawColumns(['action', 'type'])
+            ->make(true);
+
+    }
+
+    /**
+     * @param $id
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function viewData($id)
+    {
+        $systemLog = SystemLog::findOrFail($id);
+
+        return view('system::_partials.data', [
+            'data' => $systemLog->data
+        ]);
+    }
 
     /**
      * Get PHP Info

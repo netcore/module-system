@@ -16,10 +16,13 @@ class CreateSystemLogsTable extends Migration
         Schema::create('netcore_system__system_logs', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id')->default(0);
-            $table->string('method');
-            $table->string('ip');
-            $table->string('browser');
-            $table->string('platform');
+            $table->string('method')->nullable();
+            $table->string('url')->nullable();
+            $table->string('message');
+            $table->string('type')->default('log');
+            $table->string('ip')->nullable();
+            $table->string('browser')->nullable();
+            $table->string('platform')->nullable();
             $table->text('data');
             $table->timestamps();
         });
@@ -32,6 +35,6 @@ class CreateSystemLogsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('system_logs');
+        Schema::dropIfExists('netcore_system__system_logs');
     }
 }

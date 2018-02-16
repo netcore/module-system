@@ -5,6 +5,7 @@ namespace Modules\System\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Factory;
 use Modules\Setting\Repositories\SettingRepository;
+use Modules\System\Repositories\SystemRepository;
 
 class SystemServiceProvider extends ServiceProvider
 {
@@ -35,7 +36,9 @@ class SystemServiceProvider extends ServiceProvider
      */
     public function register()
     {
-
+        $this->app->singleton('SystemRepository', function ($app) {
+            return new SystemRepository();
+        });
     }
 
     /**
