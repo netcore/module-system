@@ -1,8 +1,6 @@
-@if($entry->data)
-    <a href="#" class="btn btn-default btn-xs view-data" data-id="{{ $entry->id }}">
-        <i class="fa fa-eye"></i> View Data
-    </a>
-@endif
+<a href="#" class="btn btn-default btn-xs view-data" data-id="{{ $entry->id }}">
+    <i class="fa fa-eye"></i> View Data
+</a>
 
 <a
     class="btn btn-xs btn-danger confirm-action"

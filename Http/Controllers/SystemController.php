@@ -65,13 +65,12 @@ class SystemController extends Controller
             'ip',
             'browser',
             'platform',
-            'data',
             'created_at',
         ];
 
-        foreach ($this->config['columns'] as $column) {
+        foreach ($this->config['columns'] as $column => $value) {
             if (isset($columns[$column])) {
-                if (!$columns[$column]) {
+                if (!$value) {
                     unset($columns[$column]);
                 }
             }
