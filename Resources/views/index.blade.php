@@ -1,5 +1,9 @@
 @extends('admin::layouts.master')
 
+@section('styles')
+    <link rel="stylesheet" href="{{ asset('/assets/system/css/jquery.json-viewer.css') }}">
+@append
+
 @section('content')
     @if(config('netcore.module-system.server-info'))
         <div class="row">
@@ -110,7 +114,7 @@
                     <h4 class="modal-title">Data</h4>
                 </div>
                 <div class="modal-body">
-
+                    <div id="json-renderer"></div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -121,6 +125,8 @@
 @endsection
 
 @section('scripts')
+    <script src="{{ asset('/assets/system/js/jquery.json-viewer.js') }}"></script>
+
     <script>
         $('#datatable').DataTable({
             processing: true,
@@ -177,11 +183,10 @@
             self.html('<i class="fa fa-refresh fa-spin"></i>');
             self.attr('disabled', true);
 
-            jQuery.get('{{ url('admin/system/view-data') }}/' + id, function (view) {
-                var modal = jQuery('#view-data');
+            jQuery.get('{{ url('admin/system/view-data') }}/' + id, function (response) {
+                jQuery('#json-renderer').jsonViewer(response.data);
 
-                modal.find('.modal-body').html(view);
-                modal.modal('show');
+                jQuery('#view-data').modal('show');
 
                 self.html(text);
                 self.attr('disabled', false);

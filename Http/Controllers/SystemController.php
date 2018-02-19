@@ -110,9 +110,7 @@ class SystemController extends Controller
     {
         $systemLog = SystemLog::findOrFail($id);
 
-        return view('system::_partials.data', [
-            'data' => $systemLog->data
-        ]);
+        return response()->json(['status' => 'success', 'data' => $systemLog->data]);
     }
 
     /**
