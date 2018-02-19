@@ -23,7 +23,7 @@ class CreateSystemLogsTable extends Migration
             $table->string('ip')->nullable();
             $table->string('browser')->nullable();
             $table->string('platform')->nullable();
-            $table->text('data');
+            $table->longText('data');
             $table->timestamps();
         });
     }
