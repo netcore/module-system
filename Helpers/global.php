@@ -51,10 +51,10 @@ if (!function_exists('systemCoreCount')) {
                 $cmd = "sysctl -a | grep 'hw.ncpu' | cut -d ':' -f2";
                 break;
             default:
-                unset($cmd);
+                $cmd = false;
         }
 
-        if ($cmd != '') {
+        if ($cmd) {
             $cpuCoreNo = intval(trim(shell_exec($cmd)));
         }
 
@@ -72,6 +72,10 @@ if (!function_exists('serverMemoryUsage')) {
     {
 
         $free = shell_exec('free');
+        if (!$free) {
+            return 0;
+        }
+
         $free = (string)trim($free);
         $free_arr = explode("\n", $free);
         $mem = explode(" ", $free_arr[1]);
