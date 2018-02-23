@@ -2,6 +2,7 @@
 
 @section('styles')
     <link rel="stylesheet" href="{{ asset('/assets/system/css/jquery.json-viewer.css') }}">
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"/>
 @append
 
 @section('content')
@@ -55,7 +56,7 @@
         <div class="col-md-12">
             <div class="panel panel-inverse">
                 <div class="panel-heading">
-                    <h4 class="panel-title">Logs</h4>
+                    <h4 class="panel-title">System Logs</h4>
                 </div>
                 <div class="panel-body">
                     <div class="table-primary">
@@ -80,6 +81,11 @@
                                     <th>Platform</th>
                                 @endif
                                 <th>Created At</th>
+
+                                @foreach(config('netcore.module-system.custom_columns') as $column => $title)
+                                    <th>{{ $title }}</th>
+                                @endforeach
+
                                 <th>Actions</th>
                             </tr>
                             </thead>
@@ -89,6 +95,39 @@
             </div>
         </div>
     </div>
+
+    @if(config('netcore.module-system.log-files'))
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel">
+                    <div class="panel-heading">
+                        <span class="panel-title">Log Files</span>
+                    </div>
+                    <div class="panel-body">
+                        <ul class="nav nav-tabs">
+                            @foreach($parsedLogFiles as $key => $logFile)
+                                <li class="{{ $loop->first ? 'active' : '' }}">
+                                    <a href="#log-file-{{ $key }}" data-toggle="tab" aria-expanded="true">
+                                        {{ $logFile->name }}
+                                    </a>
+                                </li>
+                            @endforeach
+                        </ul>
+                        <div class="tab-content tab-content-bordered">
+                            @foreach($parsedLogFiles as $key => $logFile)
+                                <div class="tab-pane fade in {{ $loop->first ? 'active' : '' }}"
+                                     id="log-file-{{ $key }}">
+                                    <div style="height:300px;overflow-y: auto">
+                                        {!! nl2br($logFile->content) !!}
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 
     @if(config('netcore.module-system.php-info'))
         <div class="row">
@@ -122,55 +161,56 @@
             </div>
         </div>
     </div>
+
+    <input id="column-json" type="hidden" value="{{ $columns->toJson() }}">
+    <input id="range-from" type="hidden" value="">
+    <input id="range-to" type="hidden" value="">
 @endsection
 
 @section('scripts')
     <script src="{{ asset('/assets/system/js/jquery.json-viewer.js') }}"></script>
+    <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
 
     <script>
-        $('#datatable').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: '{!! route('admin::system.pagination') !!}',
-            responsive: true,
-            order: [[0, "desc"]], // created_at
-            columns: [
-                {data: 'id', name: 'id'},
-                    @if(config('netcore.module-system.columns.type'))
-                {
-                    data: 'type', name: 'type'
-                },
-                    @endif
-                {
-                    data: 'user_id', name: 'user_id', orderable: false, searchable: false
-                },
-                {data: 'message', name: 'message'},
-                {data: 'method', name: 'method'},
-                {data: 'url', name: 'url'},
-                    @if(config('netcore.module-system.columns.type'))
-                {
-                    data: 'ip', name: 'ip'
-                },
-                    @endif
-                    @if(config('netcore.module-system.columns.browser'))
-                {
-                    data: 'browser', name: 'browser'
-                },
-                    @endif
-                    @if(config('netcore.module-system.columns.platform'))
-                {
-                    data: 'platform', name: 'platform'
-                },
-                    @endif
-                {
-                    data: 'created_at', name: 'created_at'
-                },
-                {data: 'action', name: 'action', orderable: false, searchable: false}
-            ]
+        var columns = JSON.parse(jQuery('#column-json').val());
+
+        columns.push({
+            data: 'action',
+            name: 'action',
+            orderable: false,
+            searchable: false
         });
 
-        $('#datatable_wrapper .table-caption').text('');
-        $('#datatable_wrapper .dataTables_filter input').attr('placeholder', 'Search...');
+        var table = jQuery('#datatable').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: '{!! route('admin::system.pagination') !!}',
+                data: function (d) {
+                    d.range_from = jQuery('#range-from').val();
+                    d.range_to = jQuery('#range-to').val();
+                }
+            },
+            responsive: true,
+            order: [[0, "desc"]], // created_at
+            columns: columns
+        });
+
+        jQuery('#datatable_wrapper .table-caption').html('Range: <input type="text" class="form-control daterange" style="width:200px">');
+        jQuery('#datatable_wrapper .dataTables_filter input').attr('placeholder', 'Search...');
+
+        jQuery('.daterange').daterangepicker(
+            {
+                locale: {
+                    format: 'YYYY-MM-DD'
+                }
+            },
+            function (start, end, label) {
+                jQuery('#range-from').val(start.format('YYYY-MM-DD'));
+                jQuery('#range-to').val(end.format('YYYY-MM-DD'));
+
+                table.ajax.reload();
+            });
 
         jQuery(document).on('click', '.view-data', function (e) {
             e.preventDefault();
