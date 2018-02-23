@@ -14,17 +14,7 @@ class SystemLog extends Model
     /**
      * @var array
      */
-    protected $fillable = [
-        'user_id',
-        'type',
-        'method',
-        'url',
-        'message',
-        'ip',
-        'browser',
-        'platform',
-        'data',
-    ];
+    protected $guarded = [];
 
 
     /**
