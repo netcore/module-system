@@ -2,6 +2,7 @@
 
 namespace Modules\System\Http\Controllers;
 
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Modules\System\Models\SystemLog;
@@ -19,11 +20,29 @@ class SystemController extends Controller
     private $config;
 
     /**
+     * @var array
+     */
+    private $columns;
+
+    /**
      * SystemController constructor.
      */
     public function __construct()
     {
         $this->config = config('netcore.module-system');
+
+        $this->columns = [
+            'id',
+            'user_id',
+            'type',
+            'message',
+            'url',
+            'method',
+            'ip',
+            'browser',
+            'platform',
+            'created_at',
+        ];
     }
 
     /**
@@ -35,7 +54,50 @@ class SystemController extends Controller
     {
         $sysInfo = core()->systemInfo();
 
-        return view('system::index', compact('sysInfo'));
+        $columns = [];
+
+        foreach ($this->columns as $column) {
+            if (in_array($column, array_keys($this->config['columns']))) {
+                if ($this->config['columns'][$column]) {
+                    $columns[] = (object)[
+                        'data'       => $column,
+                        'name'       => $column,
+                        'searchable' => $column !== 'user_id' ? true : false,
+                        'orderable'  => $column !== 'user_id' ? true : false
+                    ];
+                }
+            } else {
+                $columns[] = (object)[
+                    'data'       => $column,
+                    'name'       => $column,
+                    'searchable' => $column !== 'user_id' ? true : false,
+                    'orderable'  => $column !== 'user_id' ? true : false
+                ];
+            }
+        }
+
+        foreach ($this->config['custom_columns'] as $column => $title) {
+            $columns[] = (object)[
+                'data' => $column,
+                'name' => $column,
+            ];
+        }
+
+        $columns = collect($columns);
+
+        $parsedLogFiles = [];
+        $logFiles = $scanned_directory = array_diff(scandir(storage_path('logs')), array('..', '.', '.gitignore', '.gitkeep'));
+
+        foreach ($logFiles as $logFile) {
+            $parsedLogFiles[] = (object)[
+                'name'    => $logFile,
+                'content' => tailCustom(storage_path('logs/' . $logFile), 2000)
+            ];
+        }
+
+        $parsedLogFiles = collect($parsedLogFiles);
+
+        return view('system::index', compact('sysInfo', 'columns', 'parsedLogFiles'));
     }
 
     /**
@@ -53,20 +115,15 @@ class SystemController extends Controller
     /**
      * @return mixed
      */
-    public function pagination()
+    public function pagination(Request $request)
     {
-        $columns = [
-            'id',
-            'user_id',
-            'type',
-            'message',
-            'url',
-            'method',
-            'ip',
-            'browser',
-            'platform',
-            'created_at',
-        ];
+        $columns = $this->columns;
+
+        foreach ($this->config['custom_columns'] as $column => $title) {
+            if (!in_array($column, $columns)) {
+                $columns[] = $column;
+            }
+        }
 
         foreach ($this->config['columns'] as $column => $value) {
             if (isset($columns[$column])) {
@@ -77,6 +134,11 @@ class SystemController extends Controller
         }
 
         $query = SystemLog::select($columns)->with('user')->orderBy('id', 'desc');
+
+        if ($request->get('range_from') && $request->get('range_to')) {
+            $query = $query->whereDate('created_at', '>=', $request->get('range_from'))
+                ->whereDate('created_at', '<=', $request->get('range_to'));
+        }
 
         $datatable = DataTables::of($query)
             ->editColumn('user_id', function ($entry) {
