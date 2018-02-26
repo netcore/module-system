@@ -33,11 +33,11 @@ class SystemController extends Controller
 
         $this->columns = [
             'id',
-            'user_id',
             'type',
+            'user_id',
             'message',
-            'url',
             'method',
+            'url',
             'ip',
             'browser',
             'platform',
