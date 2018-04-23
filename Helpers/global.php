@@ -70,20 +70,30 @@ if (!function_exists('serverMemoryUsage')) {
      */
     function serverMemoryUsage()
     {
+        try {
+            $free = shell_exec('free');
 
-        $free = shell_exec('free');
-        if (!$free) {
+            if (!$free) {
+                return 0;
+            }
+
+            $free = (string)trim($free);
+            $freeArr = explode("\n", $free);
+            $mem = explode(" ", $freeArr[1]);
+            $mem = array_filter($mem);
+            $mem = array_merge($mem);
+
+            array_splice($mem, 0, 1);
+
+            $total = array_sum($mem) - $mem[0] - $mem[1] - $mem[2];
+            $used = $mem[0] - $total;
+
+            $memoryUsage = $used / $mem[0] * 100;
+
+            return $memoryUsage;
+        } catch (\Exception $e) {
             return 0;
         }
-
-        $free = (string)trim($free);
-        $free_arr = explode("\n", $free);
-        $mem = explode(" ", $free_arr[1]);
-        $mem = array_filter($mem);
-        $mem = array_merge($mem);
-        $memory_usage = $mem[2] / $mem[1] * 100;
-
-        return $memory_usage;
     }
 }
 
