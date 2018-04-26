@@ -29,12 +29,18 @@ class SystemRepository
      */
     public function systemInfo()
     {
+        $serverMemory = serverMemory();
+
         return (object)[
             'disk' => (object)[
                 'total' => formatBytes(disk_total_space('/')),
                 'free'  => formatBytes(disk_total_space('/') - disk_free_space('/'))
             ],
-            'ram'  => round(serverMemoryUsage(), 2),
+            'ram'  => (object)[
+                'percent' => round($serverMemory->percent, 2),
+                'used'    => formatBytes($serverMemory->used),
+                'total'   => formatBytes($serverMemory->total)
+            ],
             'cpu'  => systemLoad(systemCoreCount())
         ];
     }

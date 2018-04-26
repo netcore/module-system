@@ -41,8 +41,8 @@
                             <div class="box bg-success">
                                 <div class="box-cell p-a-3 valign-middle">
                                     <i class="box-bg-icon middle right fa fa-server"></i>
-                                    <span class="font-size-24"><strong>{{ $sysInfo->ram }} %</strong></span><br>
-                                    <span class="font-size-15">Memory Usage</span>
+                                    <span class="font-size-24"><strong>{{ $sysInfo->ram->percent }} %</strong></span><br>
+                                    <span class="font-size-15">Memory Usage: <small>{{ $sysInfo->ram->used }}/{{ $sysInfo->ram->total }}</small></span>
                                 </div>
                             </div>
                         </div>
