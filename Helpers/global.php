@@ -63,23 +63,24 @@ if (!function_exists('systemCoreCount')) {
     }
 }
 
-if (!function_exists('serverMemoryUsage')) {
+if (!function_exists('serverMemory')) {
 
-    /**
-     * @return float|int
-     */
-    function serverMemoryUsage()
+    function serverMemory()
     {
         try {
-            $free = shell_exec('free');
+            $free = shell_exec('free -b');
 
             if (!$free) {
-                return 0;
+                return (object)[
+                    'percent' => 0,
+                    'used'    => 0,
+                    'total'   => 0
+                ];
             }
 
-            $free = (string)trim($free);
+            $free = trim($free);
             $freeArr = explode("\n", $free);
-            $mem = explode(" ", $freeArr[1]);
+            $mem = explode(' ', $freeArr[1]);
             $mem = array_filter($mem);
             $mem = array_merge($mem);
 
@@ -88,11 +89,17 @@ if (!function_exists('serverMemoryUsage')) {
             $total = array_sum($mem) - $mem[0] - $mem[1] - $mem[2];
             $used = $mem[0] - $total;
 
-            $memoryUsage = $used / $mem[0] * 100;
-
-            return $memoryUsage;
+            return (object)[
+                'percent' => $used / $mem[0] * 100,
+                'used'    => $used,
+                'total'   => $mem[0]
+            ];
         } catch (\Exception $e) {
-            return 0;
+            return (object)[
+                'percent' => 0,
+                'used'    => 0,
+                'total'   => 0
+            ];
         }
     }
 }

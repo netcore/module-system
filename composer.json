@@ -4,8 +4,8 @@
     "type": "module",
     "authors": [
         {
-            "name": "Jānis Blaus",
-            "email": "janis@netcore.lv"
+            "name": "Artūrs Lukjaņenoks",
+            "email": "arturs.lukjanenoks@netcore.lv"
         }
     ],
     "autoload": {
