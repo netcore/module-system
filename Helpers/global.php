@@ -11,7 +11,12 @@ if (!function_exists('formatBytes')) {
         $base = log($size) / log(1024);
         $suffix = array("", "KB", "MB", "GB", "TB");
         $f_base = floor($base);
-        return round(pow(1024, $base - floor($base)), 1) . $suffix[$f_base];
+
+        try {
+            return round(pow(1024, $base - floor($base)), 1) . $suffix[$f_base];
+        } catch (\Exception $e) {
+            return '0 B';
+        }
     }
 
 }
@@ -25,10 +30,14 @@ if (!function_exists('systemLoad')) {
      */
     function systemLoad($coreCount = 2, $interval = 1)
     {
-        $rs = sys_getloadavg();
-        $interval = $interval >= 1 && 3 <= $interval ? $interval : 1;
-        $load = $rs[$interval];
-        return round(($load * 100) / $coreCount, 2);
+        try {
+            $rs = sys_getloadavg();
+            $interval = $interval >= 1 && 3 <= $interval ? $interval : 1;
+            $load = $rs[$interval];
+            return round(($load * 100) / $coreCount, 2);
+        } catch (\Exception $e) {
+            return 0;
+        }
     }
 }
 
