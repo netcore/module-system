@@ -98,16 +98,16 @@ class SystemController extends Controller
         $parsedLogFiles = collect($parsedLogFiles);
 
         $systemBlockCount = 0;
-        if ($this->config['system-info']['cpu']) {
+        if ($this->config['server-info']['cpu']) {
             $systemBlockCount++;
         }
-        if ($this->config['system-info']['disk']) {
+        if ($this->config['server-info']['disk']) {
             $systemBlockCount++;
         }
-        if ($this->config['system-info']['ram']) {
+        if ($this->config['server-info']['ram']) {
             $systemBlockCount++;
         }
-        if ($this->config['system-info']['network']) {
+        if ($this->config['server-info']['network']) {
             $systemBlockCount++;
         }
 

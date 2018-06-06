@@ -42,7 +42,7 @@ class SystemRepository
                 'used'    => formatBytes($serverMemory->used),
                 'total'   => formatBytes($serverMemory->total)
             ],
-            'network' => [
+            'network' => (object)[
                 'in'  => formatBytes($networkStats->in) . '/s',
                 'out' => formatBytes($networkStats->out) . '/s'
             ],
