@@ -8,8 +8,12 @@ if (!function_exists('formatBytes')) {
      */
     function formatBytes($size)
     {
+        if ($size == 0) {
+            return '0 B';
+        }
+
         $base = log($size) / log(1024);
-        $suffix = array("", "KB", "MB", "GB", "TB");
+        $suffix = array("B", "KB", "MB", "GB", "TB");
         $f_base = floor($base);
 
         try {
@@ -129,7 +133,7 @@ if (!function_exists('networkStats')) {
             $networkStats = array_values(array_filter($networkStats));
 
             foreach ($networkStats as $key => $value) {
-                $networkStats[$key] = $value * 1024;
+                $networkStats[$key] = round($value * 1024);
             }
 
             if (isset($networkStats[2]) && isset($networkStats[3])) {
