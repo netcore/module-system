@@ -13,7 +13,7 @@ if (!function_exists('formatBytes')) {
         $f_base = floor($base);
 
         try {
-            return round(pow(1024, $base - floor($base)), 1) . $suffix[$f_base];
+            return round(pow(1024, $base - floor($base)), 1) . ' ' . $suffix[$f_base];
         } catch (\Exception $e) {
             return '0 B';
         }
@@ -108,6 +108,45 @@ if (!function_exists('serverMemory')) {
                 'percent' => 0,
                 'used'    => 0,
                 'total'   => 0
+            ];
+        }
+    }
+}
+
+if (!function_exists('networkStats')) {
+
+    /**
+     * @return object
+     */
+    function networkStats()
+    {
+        try {
+            $networkStats = shell_exec('ifstat 1 1');
+
+            $networkStats = trim($networkStats);
+            $networkStats = explode("\n", $networkStats);
+            $networkStats = explode(' ', $networkStats[2]);
+            $networkStats = array_values(array_filter($networkStats));
+
+            foreach ($networkStats as $key => $value) {
+                $networkStats[$key] = $value * 1024;
+            }
+
+            if (isset($networkStats[2]) && isset($networkStats[3])) {
+                return (object)[
+                    'in'  => $networkStats[2],
+                    'out' => $networkStats[3],
+                ];
+            }
+
+            return (object)[
+                'in'  => $networkStats[0],
+                'out' => $networkStats[1],
+            ];
+        } catch (\Exception $e) {
+            return (object)[
+                'in'  => 0.00,
+                'out' => 0.00,
             ];
         }
     }

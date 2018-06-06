@@ -86,7 +86,7 @@ class SystemController extends Controller
         $columns = collect($columns);
 
         $parsedLogFiles = [];
-        $logFiles = $scanned_directory = array_diff(scandir(storage_path('logs')), array('..', '.', '.gitignore', '.gitkeep'));
+        $logFiles = array_diff(scandir(storage_path('logs')), array('..', '.', '.gitignore', '.gitkeep'));
 
         foreach ($logFiles as $logFile) {
             $parsedLogFiles[] = (object)[
@@ -97,7 +97,23 @@ class SystemController extends Controller
 
         $parsedLogFiles = collect($parsedLogFiles);
 
-        return view('system::index', compact('sysInfo', 'columns', 'parsedLogFiles'));
+        $systemBlockCount = 0;
+        if ($this->config['system-info']['cpu']) {
+            $systemBlockCount++;
+        }
+        if ($this->config['system-info']['disk']) {
+            $systemBlockCount++;
+        }
+        if ($this->config['system-info']['ram']) {
+            $systemBlockCount++;
+        }
+        if ($this->config['system-info']['network']) {
+            $systemBlockCount++;
+        }
+
+        $systemBlockClass = 'col-md-' . (12 / $systemBlockCount);
+
+        return view('system::index', compact('sysInfo', 'columns', 'parsedLogFiles', 'systemBlockClass'));
     }
 
     /**

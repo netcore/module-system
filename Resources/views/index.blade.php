@@ -6,7 +6,7 @@
 @append
 
 @section('content')
-    @if(config('netcore.module-system.server-info'))
+    @if(config('netcore.module-system.server-info.enabled'))
         <div class="row">
             <div class="col-md-12">
                 <div class="panel panel-inverse">
@@ -14,38 +14,56 @@
                         <h4 class="panel-title">System Information</h4>
                     </div>
                     <div class="panel-body">
-                        <div class="col-md-4">
-                            <div class="box bg-info">
-                                <div class="box-cell p-a-3 valign-middle">
-                                    <i class="box-bg-icon middle right fa fa-tachometer"></i>
-                                    <span class="font-size-24"><strong>{{ $sysInfo->cpu }}%</strong></span><br>
-                                    <span class="font-size-15">CPU Usage</span>
+                        @if(config('netcore.module-system.server-info.cpu'))
+                            <div class="{{ $systemBlockClass }}">
+                                <div class="box bg-info">
+                                    <div class="box-cell p-a-3 valign-middle">
+                                        <i class="box-bg-icon middle right fa fa-tachometer"></i>
+                                        <span class="font-size-24"><strong>{{ $sysInfo->cpu }}%</strong></span><br>
+                                        <span class="font-size-15">CPU Usage</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        @endif
 
-                        <div class="col-md-4">
-                            <div class="box bg-danger">
-                                <div class="box-cell p-a-3 valign-middle">
-                                    <i class="box-bg-icon middle right fa fa-hdd-o"></i>
-                                    <span class="font-size-24">
-                                        <strong>{{ $sysInfo->disk->free }}/{{ $sysInfo->disk->total }}</strong>
-                                    </span>
-                                    <br>
-                                    <span class="font-size-15">Disk Usage</span>
+                        @if(config('netcore.module-system.server-info.disk'))
+                            <div class="{{ $systemBlockClass }}">
+                                <div class="box bg-danger">
+                                    <div class="box-cell p-a-3 valign-middle">
+                                        <i class="box-bg-icon middle right fa fa-hdd-o"></i>
+                                        <span class="font-size-24">
+                                    <strong>{{ $sysInfo->disk->free }}/{{ $sysInfo->disk->total }}</strong>
+                                </span>
+                                        <br>
+                                        <span class="font-size-15">Disk Usage</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        @endif
 
-                        <div class="col-md-4">
-                            <div class="box bg-success">
-                                <div class="box-cell p-a-3 valign-middle">
-                                    <i class="box-bg-icon middle right fa fa-server"></i>
-                                    <span class="font-size-24"><strong>{{ $sysInfo->ram->percent }} %</strong></span><br>
-                                    <span class="font-size-15">Memory Usage: <small>{{ $sysInfo->ram->used }}/{{ $sysInfo->ram->total }}</small></span>
+                        @if(config('netcore.module-system.server-info.disk'))
+                            <div class="{{ $systemBlockClass }}">
+                                <div class="box bg-success">
+                                    <div class="box-cell p-a-3 valign-middle">
+                                        <i class="box-bg-icon middle right fa fa-server"></i>
+                                        <span class="font-size-24"><strong>{{ $sysInfo->ram->percent }} %</strong></span><br>
+                                        <span class="font-size-15">Memory Usage: <small>{{ $sysInfo->ram->used }}/{{ $sysInfo->ram->total }}</small></span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        @endif
+
+                        @if(config('netcore.module-system.server-info.disk'))
+                                <div class="{{ $systemBlockClass }}">
+                                    <div class="box bg-warning">
+                                        <div class="box-cell p-a-3 valign-middle">
+                                            <i class="box-bg-icon middle right fa fa-globe"></i>
+                                            <span class="font-size-20"><strong>{{ $sysInfo->network->in }} | {{ $sysInfo->network->out }}</strong></span><br>
+                                            <span class="font-size-15">Network Usage</span>
+                                        </div>
+                                    </div>
+                                </div>
+                        @endif
                     </div>
                 </div>
             </div>

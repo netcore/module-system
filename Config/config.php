@@ -2,7 +2,14 @@
 
 return [
     //Toggle server information in the System section
-    'server-info'    => true,
+    'server-info'    => [
+        'enabled' => true, //Toggle the whole server information block
+
+        'cpu'     => true, //Toggle CPU information block
+        'disk'    => true, //Toggle Disk information block
+        'ram'     => true, //Toggle RAM information block
+        'network' => true //Toggle network information block. For this to work "ifstat" should be installed on the server
+    ],
 
     //Toggle PHP information in the System section
     'php-info'       => true,
