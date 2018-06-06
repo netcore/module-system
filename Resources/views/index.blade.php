@@ -41,7 +41,7 @@
                             </div>
                         @endif
 
-                        @if(config('netcore.module-system.server-info.disk'))
+                        @if(config('netcore.module-system.server-info.ram'))
                             <div class="{{ $systemBlockClass }}">
                                 <div class="box bg-success">
                                     <div class="box-cell p-a-3 valign-middle">
@@ -53,16 +53,16 @@
                             </div>
                         @endif
 
-                        @if(config('netcore.module-system.server-info.disk'))
-                                <div class="{{ $systemBlockClass }}">
-                                    <div class="box bg-warning">
-                                        <div class="box-cell p-a-3 valign-middle">
-                                            <i class="box-bg-icon middle right fa fa-globe"></i>
-                                            <span class="font-size-20"><strong>{{ $sysInfo->network->in }} | {{ $sysInfo->network->out }}</strong></span><br>
-                                            <span class="font-size-15">Network Usage</span>
-                                        </div>
+                        @if(config('netcore.module-system.server-info.network'))
+                            <div class="{{ $systemBlockClass }}">
+                                <div class="box bg-warning">
+                                    <div class="box-cell p-a-3 valign-middle" style="padding-bottom: 26px !important;">
+                                        <i class="box-bg-icon middle right fa fa-globe"></i>
+                                        <span class="font-size-20"><strong>{{ $sysInfo->network->in }} | {{ $sysInfo->network->out }}</strong></span><br>
+                                        <span class="font-size-15">Network Usage</span>
                                     </div>
                                 </div>
+                            </div>
                         @endif
                     </div>
                 </div>
