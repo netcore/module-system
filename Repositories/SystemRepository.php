@@ -30,18 +30,23 @@ class SystemRepository
     public function systemInfo()
     {
         $serverMemory = serverMemory();
+        $networkStats = networkStats();
 
         return (object)[
-            'disk' => (object)[
+            'disk'    => (object)[
                 'total' => formatBytes(disk_total_space('/')),
                 'free'  => formatBytes(disk_total_space('/') - disk_free_space('/'))
             ],
-            'ram'  => (object)[
+            'ram'     => (object)[
                 'percent' => round($serverMemory->percent, 2),
                 'used'    => formatBytes($serverMemory->used),
                 'total'   => formatBytes($serverMemory->total)
             ],
-            'cpu'  => systemLoad(systemCoreCount())
+            'network' => [
+                'in'  => formatBytes($networkStats->in) . '/s',
+                'out' => formatBytes($networkStats->out) . '/s'
+            ],
+            'cpu'     => systemLoad(systemCoreCount())
         ];
     }
 

@@ -13,6 +13,10 @@ https://github.com/netcore/module-user
 
 https://github.com/nWidart/laravel-modules
 
+If you want to enable network usage statistics, you should first install "ifstat" on your server
+
+**sudo apt-get install ifstat**
+
 ## Installation
  
  Require this package with composer:
