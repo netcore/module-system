@@ -46,8 +46,10 @@
                                 <div class="box bg-success">
                                     <div class="box-cell p-a-3 valign-middle">
                                         <i class="box-bg-icon middle right fa fa-server"></i>
-                                        <span class="font-size-24"><strong>{{ $sysInfo->ram->percent }} %</strong></span><br>
-                                        <span class="font-size-15">Memory Usage: <small>{{ $sysInfo->ram->used }}/{{ $sysInfo->ram->total }}</small></span>
+                                        <span class="font-size-24"><strong>{{ $sysInfo->ram->percent }}
+                                                %</strong></span><br>
+                                        <span class="font-size-15">Memory Usage: <small>{{ $sysInfo->ram->used }}
+                                                /{{ $sysInfo->ram->total }}</small></span>
                                     </div>
                                 </div>
                             </div>
@@ -58,7 +60,13 @@
                                 <div class="box bg-warning">
                                     <div class="box-cell p-a-3 valign-middle" style="padding-bottom: 26px !important;">
                                         <i class="box-bg-icon middle right fa fa-globe"></i>
-                                        <span class="font-size-20"><strong>{{ $sysInfo->network->in }} | {{ $sysInfo->network->out }}</strong></span><br>
+                                        <span class="font-size-20">
+                                            <strong>
+                                                <i class="fa fa-arrow-down"></i> {{ $sysInfo->network->in }} |
+                                                <i class="fa fa-arrow-up"></i>{{ $sysInfo->network->out }}
+                                            </strong>
+                                        </span>
+                                        <br>
                                         <span class="font-size-15">Network Usage</span>
                                     </div>
                                 </div>
