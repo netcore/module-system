@@ -111,7 +111,7 @@ class SystemController extends Controller
             $systemBlockCount++;
         }
 
-        $systemBlockClass = 'col-md-' . (12 / $systemBlockCount);
+        $systemBlockClass = 'col-md-' . (12 / $systemBlockCount ? $systemBlockCount : 1);
 
         return view('system::index', compact('sysInfo', 'columns', 'parsedLogFiles', 'systemBlockClass'));
     }

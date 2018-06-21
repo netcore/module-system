@@ -52,27 +52,29 @@ if (!function_exists('systemCoreCount')) {
      */
     function systemCoreCount()
     {
+        try {
+            $cmd = "uname";
+            $OS = strtolower(trim(shell_exec($cmd)));
 
-        $cmd = "uname";
-        $OS = strtolower(trim(shell_exec($cmd)));
+            switch ($OS) {
+                case('linux'):
+                    $cmd = "cat /proc/cpuinfo | grep processor | wc -l";
+                    break;
+                case('freebsd'):
+                    $cmd = "sysctl -a | grep 'hw.ncpu' | cut -d ':' -f2";
+                    break;
+                default:
+                    $cmd = false;
+            }
 
-        switch ($OS) {
-            case('linux'):
-                $cmd = "cat /proc/cpuinfo | grep processor | wc -l";
-                break;
-            case('freebsd'):
-                $cmd = "sysctl -a | grep 'hw.ncpu' | cut -d ':' -f2";
-                break;
-            default:
-                $cmd = false;
+            if ($cmd) {
+                $cpuCoreNo = intval(trim(shell_exec($cmd)));
+            }
+
+            return empty($cpuCoreNo) ? 1 : $cpuCoreNo;
+        } catch (\Exception $e) {
+            return 1;
         }
-
-        if ($cmd) {
-            $cpuCoreNo = intval(trim(shell_exec($cmd)));
-        }
-
-        return empty($cpuCoreNo) ? 1 : $cpuCoreNo;
-
     }
 }
 
